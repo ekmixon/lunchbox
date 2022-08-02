@@ -8,6 +8,7 @@ They will be exposed to users. Use environment variables instead.
 See get_secrets() below for a fast way to access them.
 """
 
+
 import os
 
 """
@@ -23,7 +24,7 @@ PROJECT_FILENAME = 'lunchbox'
 # The name of the repository containing the source
 REPOSITORY_NAME = 'lunchbox'
 GITHUB_USERNAME = 'nprapps'
-REPOSITORY_URL = 'git@github.com:%s/%s.git' % (GITHUB_USERNAME, REPOSITORY_NAME)
+REPOSITORY_URL = f'git@github.com:{GITHUB_USERNAME}/{REPOSITORY_NAME}.git'
 REPOSITORY_ALT_URL = None # 'git@bitbucket.org:nprapps/%s.git' % REPOSITORY_NAME'
 
 DEV_CONTACT = 'EDIT THIS IN APP_CONFIG.PY'
@@ -88,14 +89,14 @@ def configure_targets(deployment_target):
         ASSETS_MAX_AGE = 0
     if deployment_target == 'production':
         S3_BUCKET = PRODUCTION_S3_BUCKET
-        S3_BASE_URL = 'http://%s/%s' % (S3_BUCKET, PROJECT_SLUG)
-        S3_DEPLOY_URL = 's3://%s/%s' % (S3_BUCKET, PROJECT_SLUG)
+        S3_BASE_URL = f'http://{S3_BUCKET}/{PROJECT_SLUG}'
+        S3_DEPLOY_URL = f's3://{S3_BUCKET}/{PROJECT_SLUG}'
         DEBUG = False
         ASSETS_MAX_AGE = 86400
     elif deployment_target == 'staging':
         S3_BUCKET = STAGING_S3_BUCKET
-        S3_BASE_URL = 'http://%s/%s' % (S3_BUCKET, PROJECT_SLUG)
-        S3_DEPLOY_URL = 's3://%s/%s' % (S3_BUCKET, PROJECT_SLUG)
+        S3_BASE_URL = f'http://{S3_BUCKET}/{PROJECT_SLUG}'
+        S3_DEPLOY_URL = f's3://{S3_BUCKET}/{PROJECT_SLUG}'
         DEBUG = True
         ASSETS_MAX_AGE = 20
     else:

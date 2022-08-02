@@ -90,13 +90,7 @@ def deploy_folder(bucket_name, src, dst, headers={}, ignore=[]):
 
             src_path = os.path.join(local_path, name)
 
-            skip = False
-
-            for pattern in ignore:
-                if fnmatch(src_path, pattern):
-                    skip = True
-                    break
-
+            skip = any(fnmatch(src_path, pattern) for pattern in ignore)
             if skip:
                 continue
 

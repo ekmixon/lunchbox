@@ -104,7 +104,9 @@ def app(port='8000'):
     if env.settings:
         local("DEPLOYMENT_TARGET=%s bash -c 'gunicorn -b 0.0.0.0:%s --timeout 3600 --debug --reload app:wsgi_app'" % (env.settings, port))
     else:
-        local('gunicorn -b 0.0.0.0:%s --timeout 3600 --debug --reload app:wsgi_app' % port)
+        local(
+            f'gunicorn -b 0.0.0.0:{port} --timeout 3600 --debug --reload app:wsgi_app'
+        )
 
 @task
 def public_app(port='8001'):
@@ -114,7 +116,9 @@ def public_app(port='8001'):
     if env.settings:
         local("DEPLOYMENT_TARGET=%s bash -c 'gunicorn -b 0.0.0.0:%s --timeout 3600 --debug --reload public_app:wsgi_app'" % (env.settings, port))
     else:
-        local('gunicorn -b 0.0.0.0:%s --timeout 3600 --debug --reload public_app:wsgi_app' % port)
+        local(
+            f'gunicorn -b 0.0.0.0:{port} --timeout 3600 --debug --reload public_app:wsgi_app'
+        )
 
 @task
 def tests():
@@ -147,14 +151,12 @@ def deploy(remote='origin', reload=False):
         local('npm run-script pack')
 
     if env.settings == 'fileserver':
-        local('rsync -vr www/ %s@%s:%s/%s' % (
-            app_config.FILE_SERVER_USER,
-            app_config.FILE_SERVER,
-            app_config.FILE_SERVER_PATH,
-            app_config.PROJECT_SLUG
-        ))
+        local(
+            f'rsync -vr www/ {app_config.FILE_SERVER_USER}@{app_config.FILE_SERVER}:{app_config.FILE_SERVER_PATH}/{app_config.PROJECT_SLUG}'
+        )
 
-    if env.settings == 'production' or env.settings == 'staging':
+
+    if env.settings in ['production', 'staging']:
         flat.deploy_folder(
             app_config.S3_BUCKET,
             'www',
@@ -168,10 +170,10 @@ def deploy(remote='origin', reload=False):
         flat.deploy_folder(
             app_config.S3_BUCKET,
             'www/img',
-            '%s/img' % app_config.PROJECT_SLUG,
+            f'{app_config.PROJECT_SLUG}/img',
             headers={
                 'Cache-Control': 'max-age=%i' % app_config.ASSETS_MAX_AGE
-            }
+            },
         )
 
 """
